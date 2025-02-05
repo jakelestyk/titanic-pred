@@ -1,0 +1,4 @@
+Pandas version: 2.1.4
+Python 3.11.7
+Name: scikit-learn
+Version: 1.2.2
