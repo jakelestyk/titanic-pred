@@ -2,8 +2,15 @@ import streamlit as st
 import pickle
 
 # Load the saved model
-with open("titanic_predictor.sav", "rb") as file:
-    model = pickle.load(file)
+model_path = "titanic_predictor.sav"
+
+if model_path:
+    try:
+        with open(model_path, "rb") as file:
+            model = pickle.load(file)
+    except FileNotFoundError:
+        st.error("Error: Model file not found. Please ensure 'titanic_predictor.sav' is uploaded.")
+        st.stop()
 
 # Function to make predictions
 def predict_survival(model, features):
@@ -23,21 +30,22 @@ def main():
     parch = st.number_input("Number of Parents/Children Aboard", min_value=0, step=1, value=0)
     fare = st.number_input("Fare (in USD)", min_value=0.0, step=0.01, value=50.0)
 
-    # Add port of embarkation selection
-    embarkation = st.selectbox("Port of Embarkation", ["C (Cherbourg)", "Q (Queenstown)", "S (Southampton)"])
-    
     # Convert categorical inputs to numerical values
-    sex = 1 if gender == "Female" else 0
-    embarkation_map = {"C (Cherbourg)": 0, "Q (Queenstown)": 1, "S (Southampton)": 2}
-    embarked = embarkation_map[embarkation]
+    sex = 1 if gender == "Male" else 0  # Matches the training data conversion
 
-    # Prepare features for prediction
-    features = [pclass, sex, age, sibsp, parch, fare, embarked]
+    # Ensure only 6 features are passed (Embarked was dropped in training)
+    features = [pclass, sex, age, sibsp, parch, fare]
+
+    # Debugging: Show input feature shape
+    st.write(f"Input feature array: {features}")
 
     # Prediction
     if st.button("Predict"):
-        result = predict_survival(model, features)
-        st.write(f"Prediction: {result}")
+        try:
+            result = predict_survival(model, features)
+            st.write(f"Prediction: {result}")
+        except ValueError as e:
+            st.error(f"Model input error: {e}")
 
 if __name__ == "__main__":
     main()
