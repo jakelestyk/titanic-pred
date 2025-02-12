@@ -1,4 +1,4 @@
-Pandas version: 2.1.4
-Python 3.11.7
-Name: scikit-learn
-Version: 1.2.2
+pandas==2.1.4
+scikit-learn==1.2.2
+streamlit==1.42.0
+numpy
